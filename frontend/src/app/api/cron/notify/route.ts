@@ -30,7 +30,6 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const twentyFiveMinsFromNow = new Date(now.getTime() + 25 * 60 * 1000);
     const thirtyFiveMinsFromNow = new Date(now.getTime() + 35 * 60 * 1000);
-    const testMode = url.searchParams.get('test') === 'true';
 
     const upcomingContests = await prisma.contest.findMany({
       where: testMode ? undefined : {
