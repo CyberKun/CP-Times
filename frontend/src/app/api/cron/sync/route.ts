@@ -74,10 +74,32 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// ---- CODEFORCES ----
+// Shared headers & rate-limiter for all Codeforces API calls.
+const CF_HEADERS = {
+  'User-Agent': 'CP-Aggregator/1.0 (contest-sync; +https://github.com/cp-aggregator)',
+};
+const CF_RATE_LIMIT_MS = 2000; // Codeforces hard-blocks IPs that burst faster than ~1 req/2s
+let cfLastRequestTime = 0;
+
+async function cfFetch(url: string): Promise<Response> {
+  const now = Date.now();
+  const elapsed = now - cfLastRequestTime;
+  if (elapsed < CF_RATE_LIMIT_MS) {
+    await new Promise(r => setTimeout(r, CF_RATE_LIMIT_MS - elapsed));
+  }
+  cfLastRequestTime = Date.now();
+  const res = await fetch(url, { headers: CF_HEADERS });
+  if (!res.ok) {
+    throw new Error(`Codeforces API ${url} returned ${res.status}`);
+  }
+  return res;
+}
+
 // ---- CODEFORCES CONTESTS ----
 async function syncCodeforcesContests() {
   try {
-    const res = await fetch('https://codeforces.com/api/contest.list');
+    const res = await cfFetch('https://codeforces.com/api/contest.list');
     const data = await res.json();
     if (data.status !== 'OK') return;
 
@@ -95,12 +117,22 @@ async function syncCodeforcesContests() {
         continue;
       }
       
-      let phase: ContestPhase = ContestPhase.BEFORE;
-      if (c.phase === 'BEFORE') phase = ContestPhase.BEFORE;
-      else if (c.phase === 'CODING') phase = ContestPhase.CODING;
-      else if (c.phase === 'PENDING_SYSTEM_TEST') phase = ContestPhase.PENDING_SYSTEM_TEST;
-      else if (c.phase === 'SYSTEM_TEST') phase = ContestPhase.SYSTEM_TEST;
-      else if (c.phase === 'FINISHED') phase = ContestPhase.FINISHED;
+      // Map Codeforces phase string to our Prisma enum.
+      // The API returns 'BEFORE' for upcoming contests — this is the critical case
+      // that must be preserved so the frontend can show the "Upcoming" tab correctly.
+      let phase: ContestPhase;
+      switch (c.phase) {
+        case 'BEFORE':              phase = ContestPhase.BEFORE; break;
+        case 'CODING':              phase = ContestPhase.CODING; break;
+        case 'PENDING_SYSTEM_TEST': phase = ContestPhase.PENDING_SYSTEM_TEST; break;
+        case 'SYSTEM_TEST':         phase = ContestPhase.SYSTEM_TEST; break;
+        case 'FINISHED':            phase = ContestPhase.FINISHED; break;
+        default:
+          // Unknown phases (e.g. future CF API additions) → treat as BEFORE
+          // so they surface in the upcoming list rather than silently vanishing.
+          console.warn(`[CF] Unknown contest phase "${c.phase}" for contest ${c.id}, defaulting to BEFORE`);
+          phase = ContestPhase.BEFORE;
+      }
 
       await prisma.contest.upsert({
         where: { platform_externalId: { platform: Platform.CODEFORCES, externalId: c.id.toString() } },
@@ -118,6 +150,7 @@ async function syncCodeforcesContests() {
     }
   } catch (err) {
     console.error('Error syncing Codeforces contests', err);
+    throw err; // re-throw so withRetry can catch and retry
   }
 }
 
@@ -173,7 +206,7 @@ async function syncLeetCodeContests() {
 // ---- CODEFORCES PROBLEMS ----
 async function syncCodeforcesProblems() {
   try {
-    const res = await fetch('https://codeforces.com/api/problemset.problems');
+    const res = await cfFetch('https://codeforces.com/api/problemset.problems');
     const data = await res.json();
     if (data.status !== 'OK') return;
 
@@ -301,53 +334,115 @@ async function syncLeetCodeProblems() {
 }
 
 // ---- ATCODER CONTESTS ----
+// The kenkoooo.com aggregator (resources/contests.json) is frequently stale or
+// returns 502/503.  We bypass it entirely and scrape AtCoder's official contest
+// listing page which has a well-structured <div id="contest-table-upcoming">
+// table plus a "Recent Contests" table.
 async function syncAtCoderContests() {
   try {
-    const res = await fetch('https://kenkoooo.com/atcoder/resources/contests.json');
-    const contests = await res.json();
-    if (!Array.isArray(contests)) return;
+    const res = await fetch('https://atcoder.jp/contests/', {
+      headers: {
+        'User-Agent': 'CP-Aggregator/1.0 (contest-sync)',
+        'Accept-Language': 'en',  // force English titles
+      },
+    });
+    if (!res.ok) throw new Error(`AtCoder returned ${res.status}`);
+    const html = await res.text();
 
     const now = new Date();
     const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-    
-    // Only sync contests from the last 3 days + future ones
-    // Filter out permanent/long-running practice contests (duration > 30 days)
-    const recentContests = contests.filter((c: any) => {
-      if (c.duration_second > 30 * 24 * 60 * 60) return false;
-      const endTime = new Date((c.start_epoch_second + c.duration_second) * 1000);
-      return endTime >= threeDaysAgo;
-    });
 
-    const chunkSize = 50;
-    for (let i = 0; i < recentContests.length; i += chunkSize) {
-      const chunk = recentContests.slice(i, i + chunkSize);
-      
-      for (const c of chunk) {
-        const startTime = new Date(c.start_epoch_second * 1000);
-        const endTime = new Date((c.start_epoch_second + c.duration_second) * 1000);
-        
-        let phase: ContestPhase = ContestPhase.BEFORE;
-        if (now >= startTime && now <= endTime) phase = ContestPhase.CODING;
-        else if (now > endTime) phase = ContestPhase.FINISHED;
+    // --- parse helper --------------------------------------------------
+    // Each contest row in AtCoder's tables looks like:
+    //   <tr> <td …><time …>2026-06-21 21:00:00+0900</time></td>
+    //        <td …><a href="/contests/abc123">AtCoder Beginner Contest 123</a></td>
+    //        <td …>01:40</td> … </tr>
+    function parseContestRows(tableHtml: string): Array<{
+      id: string; name: string; startTime: Date; endTime: Date;
+    }> {
+      const results: Array<{ id: string; name: string; startTime: Date; endTime: Date }> = [];
+      // Match each <tr>…</tr>
+      const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+      let rowMatch: RegExpExecArray | null;
+      while ((rowMatch = rowRegex.exec(tableHtml)) !== null) {
+        const row = rowMatch[1];
+
+        // 1. Start time from <time> tag
+        const timeMatch = row.match(/<time[^>]*>([^<]+)<\/time>/);
+        if (!timeMatch) continue;
+        const startTime = new Date(timeMatch[1].trim());
+        if (isNaN(startTime.getTime())) continue;
+
+        // 2. Contest link  →  /contests/<id>
+        const linkMatch = row.match(/<a\s+href="\/contests\/([^"]+)"[^>]*>([^<]+)<\/a>/);
+        if (!linkMatch) continue;
+        const id = linkMatch[1];
+        const name = linkMatch[2].trim();
+
+        // 3. Duration cell  →  HH:MM
+        const durationMatch = row.match(/<td[^>]*>(\d{2,}):(\d{2})<\/td>/);
+        if (!durationMatch) continue;
+        const durationSec = parseInt(durationMatch[1]) * 3600 + parseInt(durationMatch[2]) * 60;
+        const endTime = new Date(startTime.getTime() + durationSec * 1000);
+
+        results.push({ id, name, startTime, endTime });
+      }
+      return results;
+    }
+
+    // --- extract the two relevant tables --------------------------------
+    // Upcoming: <div id="contest-table-upcoming"> … </div>
+    // Recent:   <div id="contest-table-recent">   … </div>   (not always present)
+    const sections = [
+      { tag: 'contest-table-upcoming', phase: ContestPhase.BEFORE as ContestPhase },
+      { tag: 'contest-table-action',   phase: ContestPhase.CODING as ContestPhase },
+      { tag: 'contest-table-recent',   phase: ContestPhase.FINISHED as ContestPhase },
+    ];
+
+    let synced = 0;
+    for (const section of sections) {
+      const divRegex = new RegExp(
+        `<div[^>]*id="${section.tag}"[^>]*>([\\s\\S]*?)(?=<div[^>]*id="contest-table-|$)`,
+        'i'
+      );
+      const divMatch = html.match(divRegex);
+      if (!divMatch) continue;
+
+      const contests = parseContestRows(divMatch[1]);
+
+      for (const c of contests) {
+        // Skip very old finished contests
+        if (c.endTime < threeDaysAgo) continue;
+        // Filter out practice/long-running contests (>30 days)
+        if (c.endTime.getTime() - c.startTime.getTime() > 30 * 24 * 60 * 60 * 1000) continue;
+
+        // Re-compute phase from real timestamps (more reliable than table position)
+        let phase: ContestPhase = section.phase;
+        if (now < c.startTime) phase = ContestPhase.BEFORE;
+        else if (now >= c.startTime && now <= c.endTime) phase = ContestPhase.CODING;
+        else if (now > c.endTime) phase = ContestPhase.FINISHED;
 
         await prisma.contest.upsert({
           where: { platform_externalId: { platform: Platform.ATCODER, externalId: c.id } },
-          update: { name: c.title, startTime, endTime, phase },
+          update: { name: c.name, startTime: c.startTime, endTime: c.endTime, phase },
           create: {
             platform: Platform.ATCODER,
             externalId: c.id,
-            name: c.title,
+            name: c.name,
             url: `https://atcoder.jp/contests/${c.id}`,
-            startTime,
-            endTime,
+            startTime: c.startTime,
+            endTime: c.endTime,
             phase,
           }
         });
+        synced++;
       }
     }
-    console.log(`Synced ${recentContests.length} AtCoder contests`);
+
+    console.log(`Synced ${synced} AtCoder contests (direct HTML scrape)`);
   } catch (err) {
     console.error('Error syncing AtCoder contests', err);
+    throw err; // re-throw so withRetry can catch and retry
   }
 }
 
