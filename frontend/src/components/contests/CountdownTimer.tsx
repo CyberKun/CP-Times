@@ -3,7 +3,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCountdown } from '@/hooks/useCountdown';
-import { cn } from '@/lib/utils';
 
 interface CountdownTimerProps {
   targetDate: string;
@@ -21,19 +20,18 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
     { label: 's', value: seconds }
   ];
 
-  // Only show blocks that have values or are smaller units if a larger unit has a value
   let started = false;
   const visibleBlocks = timeBlocks.filter(block => {
     if (block.value > 0) started = true;
-    return started || block.label === 's'; // always show seconds at least
+    return started || block.label === 's';
   });
 
   return (
     <div className="flex items-center gap-1.5" title="Time until contest starts">
       {visibleBlocks.map((block, idx) => (
         <React.Fragment key={block.label}>
-          <div className="flex flex-col items-center bg-[var(--color-elevated)] rounded shadow-sm px-1.5 py-1 min-w-[28px] border border-[var(--color-border)]">
-            <span className="text-sm font-bold font-mono text-[var(--color-text-primary)] leading-none mb-0.5">
+          <div className="flex flex-col items-center bg-white/[0.04] border border-white/[0.06] rounded-md px-1.5 py-1 min-w-[28px]">
+            <span className="text-sm font-bold font-mono text-zinc-100 leading-none mb-0.5">
               <AnimatePresence mode="popLayout">
                 <motion.span
                   key={block.value}
@@ -47,10 +45,10 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 </motion.span>
               </AnimatePresence>
             </span>
-            <span className="text-[10px] text-[var(--color-text-secondary)] font-medium leading-none uppercase">{block.label}</span>
+            <span className="text-[10px] text-zinc-600 font-medium leading-none uppercase">{block.label}</span>
           </div>
           {idx < visibleBlocks.length - 1 && (
-            <span className="text-[var(--color-text-secondary)] font-bold text-sm">:</span>
+            <span className="text-zinc-600 font-bold text-sm">:</span>
           )}
         </React.Fragment>
       ))}

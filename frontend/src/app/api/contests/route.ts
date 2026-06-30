@@ -34,6 +34,20 @@ export async function GET(req: NextRequest) {
       orderBy: { startTime: 'asc' },
     });
 
+    // Check for stale data and auto-sync in background
+    const expectedSecret = process.env.CRON_SECRET || 'cp-aggregator-cron-secret';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (req.headers.get('host') ? (req.headers.get('host')?.includes('localhost') ? 'http://' : 'https://') + req.headers.get('host') : 'http://localhost:3000');
+    
+    // Find the most recently updated contest (if there are any)
+    const mostRecentUpdate = contests.reduce((max, c) => c.updatedAt > max ? c.updatedAt : max, new Date(0));
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    
+    if (contests.length > 0 && mostRecentUpdate < twoHoursAgo) {
+      console.log('Data is stale (older than 2 hours), triggering background sync...');
+      fetch(`${baseUrl}/api/cron/sync?contestsOnly=true&secret=${expectedSecret}`)
+        .catch(err => console.error('Background sync trigger failed:', err));
+    }
+
     // Dynamically compute the correct phase based on current time
     // This ensures phases are always accurate regardless of when the last sync ran
     const contestsWithLivePhase = contests.map(c => {

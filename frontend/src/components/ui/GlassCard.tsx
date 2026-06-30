@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
 
-interface GlassCardProps {
+interface BentoCardProps {
   children: ReactNode;
   className?: string;
   hoverEffect?: boolean;
@@ -18,33 +18,27 @@ export function GlassCard({
   hoverEffect = false,
   accentColor,
   onClick,
-}: GlassCardProps) {
+}: BentoCardProps) {
   return (
     <motion.div
       className={cn(
-        'glass glass-hover relative rounded-xl',
-        hoverEffect && 'cursor-pointer',
+        'relative rounded-xl bg-[#111111] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] overflow-hidden',
+        hoverEffect && 'cursor-pointer hover:border-white/[0.15] transition-colors',
         className
       )}
-      whileHover={
-        hoverEffect
-          ? {
-              scale: 1.01,
-              borderColor: 'rgba(255, 255, 255, 0.12)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08)',
-            }
-          : undefined
-      }
+      whileTap={hoverEffect ? { scale: 0.98 } : undefined}
       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       onClick={onClick}
     >
+      {/* Inner glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
       {accentColor && (
         <div
-          className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl"
+          className="absolute left-0 top-0 bottom-0 w-[2px] rounded-l-xl"
           style={{ backgroundColor: accentColor }}
         />
       )}
-      {children}
+      <div className="relative z-10">{children}</div>
     </motion.div>
   );
 }

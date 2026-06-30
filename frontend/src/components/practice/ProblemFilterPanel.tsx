@@ -69,16 +69,15 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
   ];
 
   return (
-    <div className="w-full max-w-[280px] flex-shrink-0 flex flex-col gap-8 p-6 rounded-3xl glass-surface border border-[var(--color-border)] shadow-xl relative overflow-hidden">
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-slate-200 rounded-full mix-blend-screen filter blur-[50px] opacity-10"></div>
+    <div className="w-full max-w-[260px] flex-shrink-0 flex flex-col gap-6 p-5 rounded-xl bg-[#111111] border border-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] overflow-hidden">
       
-      {/* TAGS SECTION (MOVED TO TOP) */}
+      {/* TAGS SECTION */}
       <div>
-        <h3 className="text-xs uppercase tracking-widest font-bold text-[var(--color-text-secondary)] mb-4 flex items-center gap-2">
-          <svg className="w-4 h-4 text-slate-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2">
+          <svg className="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
           Tags
         </h3>
-        <div className="relative mb-4 z-50">
+        <div className="relative mb-3 z-50">
           <input
             type="text"
             value={tagInput}
@@ -90,10 +89,10 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             onKeyDown={handleTagAdd}
             placeholder="e.g. dp, graphs (Enter)"
-            className="w-full bg-[var(--color-void)] border border-[var(--color-border)] rounded-xl px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-secondary)] focus:outline-none focus:border-slate-200 focus:ring-1 focus:ring-slate-200 transition-all shadow-inner"
+            className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-colors"
           />
           {showSuggestions && suggestedTags.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 max-h-[160px] overflow-y-auto bg-[var(--color-panel)] border border-[var(--color-border)] rounded-xl shadow-2xl z-[100] p-1">
+            <div className="absolute top-full left-0 right-0 mt-1.5 max-h-[160px] overflow-y-auto bg-[#161616] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50 z-[100] p-1">
               {suggestedTags.map((tag) => (
                 <button
                   key={tag}
@@ -106,7 +105,7 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
                     setTagInput('');
                     setShowSuggestions(false);
                   }}
-                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-elevated)] rounded-lg transition-colors"
+                  className="w-full text-left px-3 py-2 text-sm text-zinc-400 hover:text-zinc-100 hover:bg-white/[0.04] rounded-lg transition-colors"
                 >
                   {tag}
                 </button>
@@ -114,32 +113,32 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
             </div>
           )}
         </div>
-        <div className="flex flex-wrap gap-2 relative z-10">
+        <div className="flex flex-wrap gap-1.5">
           {(filters.tags || []).map((tag) => (
             <motion.span
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               key={tag}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-void)] hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 border border-[var(--color-border)] text-xs font-bold tracking-wide text-[var(--color-text-primary)] transition-colors cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-[10px] font-mono uppercase tracking-wider text-zinc-300 hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-400 transition-colors cursor-pointer"
               onClick={() => handleTagRemove(tag)}
               title="Click to remove"
             >
               {tag}
-              <X className="w-3 h-3 opacity-70" />
+              <X className="w-2.5 h-2.5 opacity-70" />
             </motion.span>
           ))}
         </div>
       </div>
 
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent" />
+      <div className="h-px w-full bg-white/[0.06]" />
 
       {/* PLATFORMS SECTION */}
       <div>
-        <h3 className="text-xs uppercase tracking-widest font-bold text-[var(--color-text-secondary)] mb-4 flex items-center gap-2">
-          <LayoutGrid className="w-4 h-4 text-slate-300" />
+        <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2">
+          <LayoutGrid className="w-3.5 h-3.5 text-zinc-500" />
           Platforms
         </h3>
-        <div className="flex flex-col gap-2.5 relative z-10">
+        <div className="flex flex-col gap-2">
           {PLATFORMS.map((platformInfo) => {
             const p = platformInfo.key as Platform;
             const info = PLATFORM_MAP[p];
@@ -149,19 +148,15 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
                 key={p}
                 onClick={() => handlePlatformSelect(p)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-300 text-sm font-bold tracking-wide",
+                  "flex items-center gap-2.5 px-3 py-2 rounded-lg border transition-colors text-sm font-medium tracking-wide",
                   isSelected 
-                    ? "bg-[var(--color-void)] border-slate-200 text-[var(--color-text-primary)] shadow-[0_0_10px_rgba(255,255,255,0.1)]" 
-                    : "bg-transparent border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-void)]/50 hover:text-[var(--color-text-primary)]"
+                    ? "border-indigo-500/30 text-zinc-200 bg-indigo-500/[0.06]" 
+                    : "border-white/[0.08] text-zinc-500 hover:text-zinc-300 hover:border-white/[0.15]"
                 )}
               >
                 <div 
-                  className="w-2.5 h-2.5 rounded-full transition-transform duration-300" 
-                  style={{ 
-                    backgroundColor: info?.color,
-                    boxShadow: isSelected ? `0 0 10px ${info?.color}` : 'none',
-                    transform: isSelected ? 'scale(1.2)' : 'scale(1)'
-                  }} 
+                  className="w-2 h-2 rounded-full shrink-0" 
+                  style={{ backgroundColor: info?.color }} 
                 />
                 {info?.name || p}
               </button>
@@ -170,14 +165,15 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
         </div>
       </div>
 
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent" />
+      <div className="h-px w-full bg-white/[0.06]" />
 
+      {/* DIFFICULTY TIER SECTION */}
       <div>
-        <h3 className="text-xs uppercase tracking-widest font-bold text-[var(--color-text-secondary)] mb-4 flex items-center gap-2">
-          <Swords className="w-4 h-4 text-slate-100" />
+        <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-3 flex items-center gap-2">
+          <Swords className="w-3.5 h-3.5 text-zinc-500" />
           Difficulty Tier
         </h3>
-        <div className="flex flex-col gap-2 relative z-10">
+        <div className="flex flex-col gap-1.5">
           {tiers.map((t) => {
             const isSelected = filters.tier === t.level;
             return (
@@ -185,17 +181,17 @@ export const ProblemFilterPanel: React.FC<ProblemFilterPanelProps> = ({ filters,
                 key={t.level}
                 onClick={() => updateFilters({ tier: t.level })}
                 className={cn(
-                  "relative overflow-hidden flex items-center justify-between px-4 py-2.5 rounded-xl border transition-all duration-300 text-sm font-bold tracking-wide",
+                  "relative overflow-hidden flex items-center justify-between px-3 py-2 rounded-lg transition-colors text-sm font-medium tracking-wide",
                   isSelected 
-                    ? `bg-[var(--color-void)] border-[var(--color-border)] text-white shadow-lg` 
-                    : "bg-transparent border-transparent text-[var(--color-text-secondary)] hover:bg-[var(--color-void)]/50 hover:text-[var(--color-text-primary)]"
+                    ? "bg-white/[0.04] border border-white/[0.08] text-zinc-100" 
+                    : "border border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.02]"
                 )}
               >
                 {isSelected && (
-                  <div className={`absolute inset-0 bg-gradient-to-r ${t.color} opacity-20`} />
+                  <div className={`absolute inset-0 bg-gradient-to-r ${t.color} opacity-[0.06]`} />
                 )}
                 <span className="relative z-10">{t.label}</span>
-                <span className="relative z-10 text-xs opacity-50 font-mono">T{t.level}</span>
+                <span className="relative z-10 text-[10px] opacity-50 font-mono text-zinc-500">T{t.level}</span>
               </button>
             );
           })}

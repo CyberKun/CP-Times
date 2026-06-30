@@ -13,40 +13,34 @@ export default function PracticePage() {
 
   return (
     <AppShell>
-      <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-10 flex flex-col gap-8 pb-12">
-        <div className="flex flex-row items-center justify-between gap-6 relative">
-          <div className="absolute -top-20 -left-20 w-64 h-64 bg-slate-200 rounded-full mix-blend-screen filter blur-[100px] opacity-10 pointer-events-none"></div>
-          
-          <div className="relative z-10">
-            <h1 className="text-3xl font-extrabold text-[var(--color-text-primary)] mb-2 tracking-tight">
+      <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6 pb-12">
+        <div className="flex flex-row items-center justify-between gap-6">
+          <div>
+            <h1 className="text-2xl font-semibold text-zinc-100 mb-1 tracking-tight">
               Practice
             </h1>
-            <p className="text-[var(--color-text-secondary)] text-lg">
+            <p className="text-zinc-400 text-sm">
               Hone your skills across platforms
             </p>
           </div>
 
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.98 }}
             onClick={shuffleProblems}
             disabled={loading}
-            className="group relative w-12 h-12 shrink-0 bg-[var(--color-void)] border border-slate-200/50 rounded-xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group w-10 h-10 shrink-0 bg-white/[0.04] border border-white/[0.08] rounded-lg flex items-center justify-center hover:border-white/[0.15] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Shuffle Problems"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-200/10 to-white/10 group-hover:opacity-100 transition-opacity" />
-            <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-50" />
-            
             {loading ? (
-              <Loader2 className="w-5 h-5 text-slate-300 animate-spin relative z-10" />
+              <Loader2 className="w-4 h-4 text-zinc-400 animate-spin" />
             ) : (
-              <Shuffle className="w-5 h-5 text-slate-300 relative z-10 group-hover:rotate-180 transition-transform duration-500" />
+              <Shuffle className="w-4 h-4 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
             )}
           </motion.button>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8 items-start relative z-10">
-          <div className="w-full lg:w-[280px] shrink-0 lg:sticky lg:top-[100px] z-20">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          <div className="w-full lg:w-[260px] shrink-0 lg:sticky lg:top-[80px] z-20">
             <ProblemFilterPanel filters={filters} updateFilters={updateFilters} />
           </div>
           
@@ -54,7 +48,7 @@ export default function PracticePage() {
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-40 rounded-2xl bg-[var(--color-panel)] border border-[var(--color-border)] animate-pulse" />
+                  <div key={i} className="h-40 rounded-xl bg-[#111111] border border-white/[0.08] animate-pulse" />
                 ))}
               </div>
             ) : (

@@ -43,26 +43,33 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized cron request' }, { status: 401 });
     }
 
+    const contestsOnly = url.searchParams.get('contestsOnly') === 'true';
+
     console.log('Starting sync...');
     const results: Record<string, string> = {};
 
-    // Run sync tasks sequentially to avoid Prisma connection pool exhaustion
-    // Each task has retry logic so transient API failures don't break the whole sync
-    for (const [name, fn] of [
+    let tasks: Array<[string, () => Promise<void>]> = [
       ['Codeforces Contests', syncCodeforcesContests],
       ['LeetCode Contests', syncLeetCodeContests],
       ['AtCoder Contests', syncAtCoderContests],
       ['CodeChef Contests', syncCodeChefContests],
-      ['Codeforces Problems', syncCodeforcesProblems],
-      ['LeetCode Problems', syncLeetCodeProblems],
-      ['AtCoder Problems', syncAtCoderProblems],
-      ['CodeChef Problems', syncCodeChefProblems],
-    ] as const) {
+    ];
+
+    if (!contestsOnly) {
+      tasks.push(
+        ['Codeforces Problems', syncCodeforcesProblems],
+        ['LeetCode Problems', syncLeetCodeProblems],
+        ['AtCoder Problems', syncAtCoderProblems],
+        ['CodeChef Problems', syncCodeChefProblems]
+      );
+    }
+
+    for (const [name, fn] of tasks) {
       try {
-        await withRetry(fn as () => Promise<void>, name);
+        await withRetry(fn, name);
         results[name] = 'OK';
-      } catch {
-        results[name] = 'FAILED';
+      } catch (err: any) {
+        results[name] = `FAILED: ${err.message || String(err)}`;
       }
     }
 
@@ -101,7 +108,7 @@ async function syncCodeforcesContests() {
   try {
     const res = await cfFetch('https://codeforces.com/api/contest.list');
     const data = await res.json();
-    if (data.status !== 'OK') return;
+    if (data.status !== 'OK') throw new Error(`Codeforces API returned status ${data.status}`);
 
     const contests = data.result;
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
@@ -165,7 +172,7 @@ async function syncLeetCodeContests() {
     });
     const data = await res.json();
     
-    if (!data?.data?.allContests) return;
+    if (!data?.data?.allContests) throw new Error('LeetCode API returned invalid data format');
     const contests = data.data.allContests;
 
     // We only care about contests around now (past few years + future)
@@ -200,6 +207,7 @@ async function syncLeetCodeContests() {
     }
   } catch (err) {
     console.error('Error syncing LeetCode contests', err);
+    throw err;
   }
 }
 
@@ -208,7 +216,7 @@ async function syncCodeforcesProblems() {
   try {
     const res = await cfFetch('https://codeforces.com/api/problemset.problems');
     const data = await res.json();
-    if (data.status !== 'OK') return;
+    if (data.status !== 'OK') throw new Error(`Codeforces API returned status ${data.status}`);
 
     const problems = data.result.problems;
     const statistics = data.result.problemStatistics;
@@ -247,6 +255,7 @@ async function syncCodeforcesProblems() {
     }
   } catch (err) {
     console.error('Error syncing Codeforces problems', err);
+    throw err;
   }
 }
 
@@ -256,7 +265,7 @@ async function syncLeetCodeProblems() {
     // 1. Fetch total ACs from old API
     const res = await fetch('https://leetcode.com/api/problems/algorithms/');
     const data = await res.json();
-    if (!data.stat_status_pairs) return;
+    if (!data.stat_status_pairs) throw new Error('LeetCode API returned invalid data format for problems');
     
     const acsMap = new Map<string, number>();
     for (const p of data.stat_status_pairs) {
@@ -297,7 +306,7 @@ async function syncLeetCodeProblems() {
       skip += limit;
     }
     
-    if (allQuestions.length === 0) return;
+    if (allQuestions.length === 0) throw new Error('No LeetCode questions fetched from GraphQL');
 
     const chunkSize = 200;
     for (let i = 0; i < allQuestions.length; i += chunkSize) {
@@ -330,6 +339,7 @@ async function syncLeetCodeProblems() {
     }
   } catch (err) {
     console.error('Error syncing LeetCode problems', err);
+    throw err;
   }
 }
 
@@ -451,7 +461,7 @@ async function syncCodeChefContests() {
   try {
     const res = await fetch('https://www.codechef.com/api/list/contests/all');
     const data = await res.json();
-    if (data.status !== 'success') return;
+    if (data.status !== 'success') throw new Error(`CodeChef API returned status ${data.status}`);
 
     const now = new Date();
     const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
@@ -495,6 +505,7 @@ async function syncCodeChefContests() {
     console.log(`Synced ${allContests.length} CodeChef contests`);
   } catch (err) {
     console.error('Error syncing CodeChef contests', err);
+    throw err;
   }
 }
 
@@ -508,7 +519,7 @@ async function syncAtCoderProblems() {
     const problems = await probsRes.json();
     const models = await modelsRes.json();
     
-    if (!Array.isArray(problems)) return;
+    if (!Array.isArray(problems)) throw new Error('AtCoder Kenkoooo API returned non-array problems data');
 
     // Kenkoooo problems are usually in contest chronological order, newer at the end.
     // Let's just process the last 300 to prevent timeouts.
@@ -544,6 +555,7 @@ async function syncAtCoderProblems() {
     }
   } catch (err) {
     console.error('Error syncing AtCoder problems', err);
+    throw err;
   }
 }
 
@@ -555,7 +567,7 @@ async function syncCodeChefProblems() {
       const res = await fetch(`https://www.codechef.com/api/list/problems?page=${page}&limit=300`);
       const data = await res.json();
       
-      if (data.status !== 'success' || !data.data || data.data.length === 0) continue;
+      if (data.status !== 'success' || !data.data || data.data.length === 0) throw new Error(`CodeChef API returned status ${data.status} for problems`);
 
       const problems = data.data;
       const chunkSize = 200;
@@ -590,5 +602,6 @@ async function syncCodeChefProblems() {
     }
   } catch (err) {
     console.error('Error syncing CodeChef problems', err);
+    throw err;
   }
 }

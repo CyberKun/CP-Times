@@ -14,8 +14,8 @@ export function Badge({
   size = 'sm',
 }: BadgeProps) {
   const baseClasses = cn(
-    'inline-flex items-center font-medium rounded-full whitespace-nowrap',
-    size === 'sm' ? 'px-2.5 py-0.5 text-[11px] tracking-wide' : 'px-3 py-1 text-xs'
+    'inline-flex items-center font-mono font-medium rounded-md whitespace-nowrap uppercase tracking-widest',
+    size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-[11px]'
   );
 
   if (variant === 'solid') {
@@ -23,7 +23,7 @@ export function Badge({
       <span
         className={baseClasses}
         style={{
-          backgroundColor: `${color}20`,
+          backgroundColor: `${color}10`,
           color: color,
         }}
       >
@@ -37,7 +37,7 @@ export function Badge({
       <span
         className={baseClasses}
         style={{
-          border: `1px solid ${color}40`,
+          border: `1px solid ${color}30`,
           color: color,
           backgroundColor: 'transparent',
         }}
@@ -52,9 +52,9 @@ export function Badge({
     <span
       className={baseClasses}
       style={{
-        backgroundColor: `${color}20`,
+        backgroundColor: `${color}10`,
         color: color,
-        boxShadow: `0 0 12px ${color}30, 0 0 4px ${color}20`,
+        boxShadow: `0 0 8px ${color}15`,
       }}
     >
       {label}

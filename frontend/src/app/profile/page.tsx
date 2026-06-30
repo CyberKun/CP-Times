@@ -95,7 +95,7 @@ export default function ProfilePage() {
     return (
       <AppShell>
         <div className="flex items-center justify-center min-h-[60vh] w-full">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+          <div className="w-10 h-10 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
         </div>
       </AppShell>
     );
@@ -175,20 +175,17 @@ export default function ProfilePage() {
     <AppShell>
       <div className="w-full relative pb-20">
         {/* Banner */}
-        <div className="w-full h-64 bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 relative overflow-hidden border-b border-[var(--color-border)]">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-void)] to-transparent"></div>
-          <div className="absolute top-10 left-1/4 w-32 h-32 bg-slate-200 rounded-full mix-blend-screen filter blur-[60px] opacity-30 animate-pulse"></div>
-          <div className="absolute top-20 right-1/4 w-40 h-40 bg-white rounded-full mix-blend-screen filter blur-[70px] opacity-20"></div>
+        <div className="w-full h-48 bg-gradient-to-b from-indigo-950/20 via-[#0c0c0c] to-[#080808] relative overflow-hidden border-b border-white/[0.06]">
         </div>
 
-        <div className="max-w-[1200px] mx-auto w-full px-4 sm:px-6 lg:px-8 -mt-24 relative z-10">
+        <div className="max-w-[1200px] mx-auto w-full px-4 sm:px-6 lg:px-8 -mt-20 relative z-10">
           
           {message.text && (
             <motion.div 
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`mb-6 p-4 rounded-xl border backdrop-blur-md ${message.type === 'success' ? 'bg-white/10 border-white/30 text-slate-100 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-red-500/10 border-red-500/30 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.1)]'}`}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className={`mb-6 p-4 rounded-xl border text-sm ${message.type === 'success' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' : 'bg-red-500/5 border-red-500/20 text-red-400'}`}
             >
               {message.text}
             </motion.div>
@@ -203,118 +200,119 @@ export default function ProfilePage() {
           />
 
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-surface rounded-3xl p-8 lg:p-12 relative overflow-hidden shadow-2xl flex flex-col lg:flex-row gap-12"
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="bg-[#111111] border border-white/[0.08] rounded-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-8 lg:p-10 relative overflow-hidden flex flex-col lg:flex-row gap-10"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-300 via-white to-slate-100" />
+            {/* Inner glow */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
             
             {/* Left Section: User Identity & Profile Form */}
-            <div className="w-full lg:w-1/3 flex flex-col gap-8">
+            <div className="w-full lg:w-1/3 flex flex-col gap-8 relative z-10">
               
               <div className="flex flex-col items-center text-center">
                 <div 
                   className="relative mb-6 group cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-tr from-slate-200 to-white rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
                   {profileForm.avatarUrl || user?.avatarUrl ? (
                     <img 
                       src={profileForm.avatarUrl || user?.avatarUrl} 
                       alt="Avatar" 
-                      className="w-32 h-32 rounded-full bg-[var(--color-panel)] border-4 border-[var(--color-void)] relative z-10 object-cover group-hover:opacity-80 transition-opacity"
+                      className="w-28 h-28 rounded-full bg-[#111111] border-4 border-[#080808] relative z-10 object-cover group-hover:opacity-80 transition-opacity"
                     />
                   ) : (
-                    <div className="w-32 h-32 rounded-full bg-[var(--color-panel)] border-4 border-[var(--color-void)] relative z-10 flex items-center justify-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-slate-300 to-white uppercase group-hover:opacity-80 transition-opacity">
+                    <div className="w-28 h-28 rounded-full bg-[#191919] border-4 border-[#080808] relative z-10 flex items-center justify-center text-4xl font-semibold text-zinc-400 uppercase group-hover:opacity-80 transition-opacity">
                       {user?.username?.charAt(0) || 'U'}
                     </div>
                   )}
                   
                   {/* Upload Overlay */}
                   <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="bg-black/50 p-2 rounded-full backdrop-blur-sm">
-                      <Camera className="w-6 h-6 text-white" />
+                    <div className="bg-black/60 p-2 rounded-full">
+                      <Camera className="w-5 h-5 text-white" />
                     </div>
                   </div>
 
-                  <div className="absolute -bottom-2 -right-2 bg-white text-white w-10 h-10 rounded-full border-4 border-[var(--color-void)] flex items-center justify-center z-30 shadow-[0_0_10px_rgba(16,185,129,0.5)]">
-                    <Hexagon className="w-5 h-5 fill-current" />
+                  <div className="absolute -bottom-1.5 -right-1.5 bg-indigo-500 text-white w-8 h-8 rounded-full border-4 border-[#080808] flex items-center justify-center z-30">
+                    <Hexagon className="w-4 h-4 fill-current" />
                   </div>
                 </div>
 
-                <h1 className="text-3xl font-extrabold text-[var(--color-text-primary)] tracking-tight mb-1">{user?.username}</h1>
-                <p className="text-[var(--color-text-secondary)] font-medium mb-8 flex items-center gap-2 justify-center">
-                  <Target className="w-4 h-4" /> {user?.email}
+                <h1 className="text-xl font-semibold text-zinc-100 tracking-tight mb-0.5">{user?.username}</h1>
+                <p className="text-zinc-400 text-sm mb-6 flex items-center gap-1.5 justify-center">
+                  <Target className="w-3.5 h-3.5 text-zinc-500" /> {user?.email}
                 </p>
 
-                <div className="w-full p-5 rounded-2xl bg-[var(--color-void)]/50 border border-[var(--color-border)] shadow-inner flex items-center justify-between mb-8">
+                <div className="w-full p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between mb-6">
                   <div className="text-left">
-                    <p className="text-xs uppercase tracking-widest text-[var(--color-text-muted)] font-bold mb-1">Total Solved</p>
-                    <p className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 to-slate-300 drop-shadow-md">
+                    <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-1">Total Solved</p>
+                    <p className="text-3xl font-mono font-semibold text-zinc-100">
                       {user?.totalSolved || 0}
                     </p>
                   </div>
-                  <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center border border-white/20 shadow-[0_0_20px_rgba(16,185,129,0.15)]">
-                    <Trophy className="w-7 h-7 text-slate-100" />
+                  <div className="w-11 h-11 rounded-full bg-white/[0.04] flex items-center justify-center border border-white/[0.06]">
+                    <Trophy className="w-5 h-5 text-zinc-400" />
                   </div>
                 </div>
               </div>
 
               {/* Profile Details Form */}
               <form onSubmit={handleUpdateProfile} className="flex flex-col gap-4">
-                <h3 className="text-sm uppercase tracking-widest font-bold text-[var(--color-text-secondary)] mb-2">
+                <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-1">
                   Profile Details
                 </h3>
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">Username</label>
+                  <label className="block text-xs font-medium text-zinc-500 mb-1">Username</label>
                   <input
                     type="text"
                     required
                     value={profileForm.username}
                     onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
-                    className="w-full bg-[var(--color-void)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-[var(--color-text-primary)] text-sm focus:outline-none focus:border-slate-200 focus:ring-1 focus:ring-slate-200 transition-colors"
+                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-zinc-100 text-sm focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1">Email</label>
+                  <label className="block text-xs font-medium text-zinc-500 mb-1">Email</label>
                   <input
                     type="email"
                     required
                     value={profileForm.email}
                     onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                    className="w-full bg-[var(--color-void)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-[var(--color-text-primary)] text-sm focus:outline-none focus:border-slate-200 focus:ring-1 focus:ring-slate-200 transition-colors"
+                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-zinc-100 text-sm focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 transition-colors"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={isUpdatingProfile}
-                  className="mt-2 py-3 bg-[var(--color-elevated)] hover:bg-[var(--color-border)] border border-[var(--color-border)] rounded-xl text-[var(--color-text-primary)] text-sm font-bold tracking-wide transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="mt-2 py-2.5 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] rounded-lg text-zinc-200 text-sm font-medium tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isUpdatingProfile ? 'UPDATING...' : 'UPDATE PROFILE'}
+                  {isUpdatingProfile ? 'Updating...' : 'Update Profile'}
                 </button>
               </form>
 
             </div>
 
-            {/* Right Section: Personal information & Linked Platforms */}
-            <div className="w-full lg:w-2/3 flex flex-col">
+            {/* Right Section: Linked Platforms */}
+            <div className="w-full lg:w-2/3 flex flex-col relative z-10">
               
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Personal information</h2>
-                  <p className="text-[var(--color-text-secondary)] text-sm mt-1">Manage your connected competitive programming profiles</p>
+                  <h2 className="text-xl font-semibold text-zinc-100 tracking-tight">Personal information</h2>
+                  <p className="text-zinc-400 text-sm mt-1">Manage your connected competitive programming profiles</p>
                 </div>
                 <button 
                   onClick={handleSync}
                   disabled={isSyncing}
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-void)] hover:bg-[var(--color-border)] border border-[var(--color-border)] text-sm font-bold text-[var(--color-text-primary)] transition-all shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] text-sm font-medium text-zinc-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
                 >
-                  <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-slate-300' : 'text-[var(--color-text-secondary)] group-hover:text-slate-300 transition-colors'}`} />
-                  {isSyncing ? 'SYNCING...' : 'SYNC ALL DATA'}
+                  <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-zinc-300' : 'text-zinc-500 group-hover:text-zinc-300 transition-colors'}`} />
+                  {isSyncing ? 'Syncing...' : 'Sync All Data'}
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                 {user?.platforms && user.platforms.length > 0 ? (
                   user.platforms.map((p) => {
                     const info = PLATFORM_MAP[p.platform];
@@ -322,42 +320,40 @@ export default function ProfilePage() {
                       <div 
                         key={p.platform} 
                         onClick={() => openPlatformProfile(p.platform, p.handle)}
-                        className="group relative overflow-hidden rounded-2xl bg-[var(--color-void)]/40 border border-[var(--color-border)] hover:border-[var(--color-border-hover)] transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer p-5 flex flex-col h-full"
+                        className="group relative overflow-hidden rounded-xl bg-[#111111] border border-white/[0.08] hover:border-white/[0.15] transition-colors cursor-pointer p-5 flex flex-col h-full"
                       >
-                        <div className="absolute top-0 right-0 w-24 h-24 rounded-bl-full opacity-10 transition-opacity group-hover:opacity-20" style={{ backgroundColor: info?.color || '#ffffff' }}></div>
-                        
                         {/* Unlink Button */}
                         <button 
                           onClick={(e) => handleUnlinkPlatform(p.platform, e)}
-                          className="absolute top-4 right-4 p-1.5 rounded-md bg-transparent hover:bg-red-500/10 text-[var(--color-text-muted)] hover:text-red-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10"
+                          className="absolute top-4 right-4 p-1.5 rounded-md hover:bg-red-500/10 text-zinc-500 hover:text-red-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10"
                           title="Unlink Platform"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
 
-                        <div className="absolute top-4 right-12 p-1.5 rounded-md text-[var(--color-text-muted)] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10">
+                        <div className="absolute top-4 right-12 p-1.5 rounded-md text-zinc-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all z-10">
                           <ExternalLink className="w-4 h-4" />
                         </div>
 
-                        <div className="flex items-center gap-4 mb-4 mt-2">
-                          <div className="w-12 h-12 rounded-xl bg-[var(--color-panel)] flex items-center justify-center border border-[var(--color-border)] shadow-inner" style={{ boxShadow: `inset 0 0 10px ${info?.color}20` }}>
+                        <div className="flex items-center gap-3.5 mb-4 mt-1">
+                          <div className="w-10 h-10 rounded-lg bg-white/[0.04] flex items-center justify-center border border-white/[0.06]">
                             <div style={{ color: getPlatformColor(p.platform) }}>
-                              {getPlatformIcon(p.platform, "w-6 h-6")}
+                              {getPlatformIcon(p.platform, "w-5 h-5")}
                             </div>
                           </div>
                           <div>
-                            <p className="text-xs uppercase tracking-widest text-[var(--color-text-secondary)] font-bold">{info?.name || p.platform}</p>
-                            <p className="text-lg font-bold text-[var(--color-text-primary)] tracking-tight">{p.handle}</p>
+                            <p className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">{info?.name || p.platform}</p>
+                            <p className="text-sm font-semibold text-zinc-100 tracking-tight">{p.handle}</p>
                           </div>
                         </div>
                         
-                        <div className="mt-auto pt-4 border-t border-[var(--color-border)] flex items-center justify-between relative z-10">
-                          <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-muted)]">
-                            <Flame className="w-3.5 h-3.5 text-slate-100" />
+                        <div className="mt-auto pt-3 border-t border-white/[0.06] flex items-center justify-between relative z-10">
+                          <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-500">
+                            <Flame className="w-3 h-3 text-zinc-500" />
                             Active
                           </div>
                           {p.syncedAt && (
-                            <div className="text-[10px] text-[var(--color-text-muted)] font-mono">
+                            <div className="text-[10px] text-zinc-600 font-mono">
                               {new Date(p.syncedAt).toLocaleDateString()} {new Date(p.syncedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </div>
                           )}
@@ -366,35 +362,34 @@ export default function ProfilePage() {
                     )
                   })
                 ) : (
-                  <div className="col-span-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-[var(--color-border)] rounded-2xl bg-[var(--color-void)]/20">
-                    <div className="w-16 h-16 rounded-full bg-[var(--color-panel)] flex items-center justify-center mb-4 text-slate-500">
-                      <LinkIcon className="w-8 h-8" />
+                  <div className="col-span-full py-12 flex flex-col items-center justify-center border border-dashed border-white/[0.08] rounded-xl bg-white/[0.02]">
+                    <div className="w-14 h-14 rounded-full bg-white/[0.04] flex items-center justify-center mb-4 text-zinc-600 border border-white/[0.06]">
+                      <LinkIcon className="w-7 h-7" />
                     </div>
-                    <p className="text-[var(--color-text-primary)] font-bold text-lg mb-1">No platforms connected</p>
-                    <p className="text-[var(--color-text-secondary)] text-sm max-w-sm text-center">Link your coding profiles below to start aggregating your stats.</p>
+                    <p className="text-zinc-100 font-semibold text-sm mb-1">No platforms connected</p>
+                    <p className="text-zinc-400 text-sm max-w-sm text-center">Link your coding profiles below to start aggregating your stats.</p>
                   </div>
                 )}
               </div>
 
               <div className="relative mt-auto">
-                <div className="absolute inset-0 bg-gradient-to-r from-slate-200/5 to-white/5 rounded-2xl" />
-                <form onSubmit={handleLinkPlatform} className="relative p-6 rounded-2xl border border-[var(--color-border)] bg-[var(--color-void)]/60">
-                  <h3 className="text-sm uppercase tracking-widest font-bold text-[var(--color-text-secondary)] mb-5 flex items-center gap-2">
-                    <LinkIcon className="w-4 h-4" /> Link New Platform
+                <form onSubmit={handleLinkPlatform} className="relative p-5 rounded-xl border border-white/[0.06] bg-white/[0.03]">
+                  <h3 className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 mb-4 flex items-center gap-2">
+                    <LinkIcon className="w-3.5 h-3.5" /> Link New Platform
                   </h3>
                   
-                  <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative sm:w-1/3">
                       <select 
                         value={selectedPlatform}
                         onChange={(e) => setSelectedPlatform(e.target.value)}
-                        className="w-full bg-[var(--color-panel)] border border-[var(--color-border)] rounded-xl pl-4 pr-10 py-3.5 text-[var(--color-text-primary)] text-sm font-medium focus:outline-none focus:border-slate-200 focus:ring-1 focus:ring-slate-200 appearance-none shadow-inner cursor-pointer"
+                        className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg pl-3 pr-8 py-2.5 text-zinc-100 text-sm focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 appearance-none cursor-pointer transition-colors"
                       >
                         {PLATFORMS.map(p => (
-                          <option key={p.key} value={p.key} className="bg-[var(--color-panel)] font-medium py-2">{p.name}</option>
+                          <option key={p.key} value={p.key} className="bg-[#111111] text-zinc-100">{p.name}</option>
                         ))}
                       </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-[var(--color-text-secondary)]">
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-zinc-500">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                       </div>
                     </div>
@@ -405,15 +400,15 @@ export default function ProfilePage() {
                       placeholder="Enter your platform handle"
                       value={handle}
                       onChange={(e) => setHandle(e.target.value)}
-                      className="flex-1 bg-[var(--color-panel)] border border-[var(--color-border)] rounded-xl px-4 py-3.5 text-[var(--color-text-primary)] text-sm focus:outline-none focus:border-white focus:ring-1 focus:ring-white placeholder-[var(--color-text-muted)] shadow-inner transition-colors"
+                      className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-zinc-100 text-sm focus:outline-none focus:border-indigo-500/40 focus:ring-1 focus:ring-indigo-500/20 placeholder-zinc-600 transition-colors"
                     />
                     
                     <button
                       type="submit"
                       disabled={isLinking}
-                      className="sm:w-32 py-3.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-white text-sm font-bold tracking-wide transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border border-emerald-500"
+                      className="sm:w-28 py-2.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/15 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {isLinking ? 'LINKING...' : 'CONNECT'}
+                      {isLinking ? 'Linking...' : 'Connect'}
                     </button>
                   </div>
                 </form>

@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/hooks/useAuth";
+import PushNotificationPrompt from "@/components/ui/PushNotificationPrompt";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -17,10 +18,6 @@ export const metadata: Metadata = {
   title: "CP Times",
   description: "Track coding contests and problems across all platforms",
 };
-
-
-
-import PushNotificationPrompt from "@/components/ui/PushNotificationPrompt";
 
 export default function RootLayout({
   children,
@@ -30,10 +27,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col overflow-x-hidden w-full bg-[var(--color-void)] text-[var(--color-text-primary)]">
+      <body className="min-h-full flex flex-col overflow-x-hidden w-full bg-[#080808] text-zinc-100">
         <AuthProvider>
           {children}
           <PushNotificationPrompt />
