@@ -6,33 +6,49 @@ export const PLATFORMS: PlatformInfo[] = [
   {
     key: 'CODEFORCES',
     name: 'Codeforces',
-    color: '#1F8ACB', // Official Blue
+    color: '#FF6B5E',
     icon: 'Code2',
-    gradient: 'from-blue-400 to-blue-600',
+    gradient: '',
   },
   {
     key: 'LEETCODE',
     name: 'LeetCode',
-    color: '#ffa116', // Leetcode Orange
+    color: '#F5A623',
     icon: 'Terminal',
-    gradient: 'from-orange-400 to-orange-600',
+    gradient: '',
   },
   {
     key: 'ATCODER',
     name: 'AtCoder',
-    color: '#8B5CF6', // Vibrant Violet
+    color: '#2EC4B6',
     icon: 'Triangle',
-    gradient: 'from-violet-400 to-violet-600',
+    gradient: '',
   },
   {
     key: 'CODECHEF',
     name: 'CodeChef',
-    color: '#10B981', // Vibrant Emerald Green
+    color: '#A78BFA',
     icon: 'Hexagon',
-    gradient: 'from-emerald-400 to-emerald-600',
+    gradient: '',
   },
 ];
 
 export const PLATFORM_MAP = Object.fromEntries(
   PLATFORMS.map((p) => [p.key, p])
 ) as Record<string, PlatformInfo>;
+
+/** CF rating-tier colors for division/difficulty tags */
+export const DIV_COLORS: Record<string, string> = {
+  'Div. 1': '#FF6B5E',
+  'Div. 2': '#4C8DFF',
+  'Div. 3': '#2EC4B6',
+  'Div. 4': '#7C8698',
+  'Div 1': '#FF6B5E',
+  'Div 2': '#4C8DFF',
+  'Div 3': '#2EC4B6',
+  'Div 4': '#7C8698',
+  div1: '#FF6B5E',
+  div2: '#4C8DFF',
+  div3: '#2EC4B6',
+  div4: '#7C8698',
+};

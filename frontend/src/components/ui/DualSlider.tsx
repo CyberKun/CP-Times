@@ -75,11 +75,7 @@ export const DualSlider: React.FC<DualSliderProps> = ({ min, max, value, onChang
         value={minVal}
         ref={minValRef}
         onChange={handleMinChange}
-        className={cn(
-          "pointer-events-none absolute w-full h-1 appearance-none bg-transparent outline-none z-30",
-          "[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-300 [&::-webkit-slider-thumb]:cursor-pointer",
-          "[&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-300 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-none"
-        )}
+        className="pointer-events-none absolute w-full h-1 appearance-none bg-transparent outline-none z-30"
       />
       <input
         type="range"
@@ -88,15 +84,11 @@ export const DualSlider: React.FC<DualSliderProps> = ({ min, max, value, onChang
         value={maxVal}
         ref={maxValRef}
         onChange={handleMaxChange}
-        className={cn(
-          "pointer-events-none absolute w-full h-1 appearance-none bg-transparent outline-none z-40",
-          "[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-slate-300 [&::-webkit-slider-thumb]:cursor-pointer",
-          "[&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-slate-300 [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-none"
-        )}
+        className="pointer-events-none absolute w-full h-1 appearance-none bg-transparent outline-none z-40"
       />
 
-      <div className="relative w-full h-1 bg-white/10 rounded-full z-10">
-        <div ref={range} className="absolute h-1 bg-slate-200 rounded-full z-20" />
+      <div className="relative w-full h-1 bg-[#30363D] rounded z-10">
+        <div ref={range} className="absolute h-1 bg-[#E6EDF3] rounded z-20" />
       </div>
       
       <style dangerouslySetInnerHTML={{__html: `
@@ -105,8 +97,8 @@ export const DualSlider: React.FC<DualSliderProps> = ({ min, max, value, onChang
           width: 16px;
           height: 16px;
           -webkit-appearance: none;
-          border-radius: 50%;
-          background: #22d3ee;
+          border-radius: 4px;
+          background: #E6EDF3;
           cursor: pointer;
         }
         input[type=range]::-moz-range-thumb {
@@ -114,8 +106,8 @@ export const DualSlider: React.FC<DualSliderProps> = ({ min, max, value, onChang
           width: 16px;
           height: 16px;
           appearance: none;
-          border-radius: 50%;
-          background: #22d3ee;
+          border-radius: 4px;
+          background: #E6EDF3;
           cursor: pointer;
           border: none;
         }

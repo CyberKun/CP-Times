@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
-import { Topbar } from './Topbar';
-import { motion } from 'framer-motion';
+import Sidebar from './Sidebar';
+import Topbar from './Topbar';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -10,19 +9,19 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-[#080808] text-zinc-100 flex flex-col font-sans">
-      <Topbar />
-      
-      <main className="flex-1 w-full relative z-10 flex flex-col items-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-          className="w-full"
-        >
+    <div className="min-h-screen flex" style={{ backgroundColor: '#0A0E17' }}>
+      <Sidebar />
+      <div
+        className="flex-1 flex flex-col min-h-screen"
+        style={{ marginLeft: 240 }}
+      >
+        <Topbar />
+        <main className="flex-1" style={{ padding: 32 }}>
           {children}
-        </motion.div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
+
+export default AppShell;

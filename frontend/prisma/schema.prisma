@@ -33,6 +33,7 @@ model User {
   solvedProblems   UserSolvedProblem[]
   attemptedContests UserAttemptedContest[]
   pushSubscriptions PushSubscription[]
+  userAttempts      UserAttempt[]
 }
 
 model UserPlatform {
@@ -57,8 +58,19 @@ model Problem {
   difficulty  String?
   solvedCount Int?
   tags        String[]
+  
+  statement_text         String?
+  editorial_text         String?
+  idf_tag_weights        Json?
+  constraint_fingerprint String?
 
-  solvedBy    UserSolvedProblem[]
+  embedding          Float[]
+  embedding_source   String?
+  indexed_at         DateTime?
+
+  solvedBy          UserSolvedProblem[]
+  editorialSegments EditorialSegment[]
+  userAttempts      UserAttempt[]
 
   @@unique([platform, externalId])
 }
@@ -74,7 +86,8 @@ model Contest {
   phase       ContestPhase
   updatedAt   DateTime @default(now()) @updatedAt
 
-  attemptedBy UserAttemptedContest[]
+  attemptedBy  UserAttemptedContest[]
+  userAttempts UserAttempt[]
 
   @@unique([platform, externalId])
 }
@@ -124,3 +137,28 @@ model PasswordResetToken {
   @@unique([email, token])
 }
 
+model EditorialSegment {
+  id           String  @id @default(cuid())
+  problemId    String
+  problem      Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  segment_text String
+  tfidf_vector Json?
+  source       String
+
+  @@index([problemId])
+}
+
+model UserAttempt {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId      String
+  problem        Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  contestId      String?
+  contest        Contest? @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  verdict        String
+  has_submission Boolean  @default(false)
+
+  @@index([userId, problemId])
+  @@index([contestId])
+}

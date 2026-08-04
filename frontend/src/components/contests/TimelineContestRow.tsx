@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { ExternalLink, AlertTriangle } from 'lucide-react';
 import { Contest } from '@/types';
 import { CountdownTimer } from './CountdownTimer';
@@ -33,15 +32,12 @@ export function TimelineContestRow({ contest, index, clashingWith, isLast = fals
     ((new Date(contest.endTime || contest.startTime).getTime() - new Date(contest.startTime).getTime()) / 1000);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -4 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30, delay: index * 0.015 }}
+    <div
       className="group relative pl-6"
     >
       {/* Vertical connecting line */}
       {!isLast && (
-        <div className="absolute left-[3px] top-[14px] bottom-0 w-px bg-white/[0.06]" />
+        <div className="absolute left-[3px] top-[14px] bottom-0 w-px bg-[#30363D]" />
       )}
 
       {/* Timeline dot */}
@@ -60,7 +56,7 @@ export function TimelineContestRow({ contest, index, clashingWith, isLast = fals
             href={contest.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[13px] font-medium text-zinc-200 hover:text-white transition-colors leading-snug line-clamp-1"
+            className="text-[13px] font-medium text-[#E6EDF3] hover:text-white transition-colors duration-100 leading-snug line-clamp-1"
             title={contest.name}
           >
             {contest.name}
@@ -68,17 +64,17 @@ export function TimelineContestRow({ contest, index, clashingWith, isLast = fals
 
           {/* Meta line */}
           <div className="flex items-center gap-1.5 mt-1 flex-wrap text-[10px]">
-            <span className="font-mono uppercase tracking-widest text-zinc-500">
+            <span className="font-mono uppercase tracking-widest text-[#8B949E]">
               {platformInfo?.name || contest.platform}
             </span>
-            <span className="text-zinc-700">·</span>
-            <span className="font-mono text-zinc-500">{timeStr}</span>
-            <span className="text-zinc-700">·</span>
-            <span className="font-mono text-zinc-600">{formatDuration(duration)}</span>
+            <span className="text-[#30363D]">·</span>
+            <span className="font-mono text-[#8B949E]">{timeStr}</span>
+            <span className="text-[#30363D]">·</span>
+            <span className="font-mono text-[#8B949E]">{formatDuration(duration)}</span>
             {contest.contestType && (
               <>
-                <span className="text-zinc-700">·</span>
-                <span className="font-mono text-zinc-600">{contest.contestType}</span>
+                <span className="text-[#30363D]">·</span>
+                <span className="font-mono text-[#8B949E]">{contest.contestType}</span>
               </>
             )}
           </div>
@@ -90,7 +86,7 @@ export function TimelineContestRow({ contest, index, clashingWith, isLast = fals
             </div>
           )}
           {isLive && (
-            <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+            <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-[10px] font-mono font-bold tracking-wider text-emerald-400 uppercase">Live Now</span>
             </div>
@@ -106,19 +102,19 @@ export function TimelineContestRow({ contest, index, clashingWith, isLast = fals
         </div>
 
         {/* Actions — always visible on mobile, hover on desktop */}
-        <div className="flex items-center gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 shrink-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-100">
           {!isPast && <CalendarSyncMenu contest={contest} />}
           <a
             href={contest.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-1.5 rounded-lg hover:bg-white/[0.04] text-zinc-600 hover:text-zinc-300 transition-colors"
+            className="p-1.5 rounded hover:bg-[#1C2128] text-[#8B949E] hover:text-[#E6EDF3] transition-colors duration-100"
             title="Open contest"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

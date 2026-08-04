@@ -34,6 +34,10 @@ export interface Problem {
   solvedCount: number;
   tags: string[];
   isSolved?: boolean;
+  statement_text?: string | null;
+  editorial_text?: string | null;
+  idf_tag_weights?: Record<string, number> | null;
+  constraint_fingerprint?: string | null;
 }
 
 export interface ProblemFilterRequest {
@@ -75,3 +79,76 @@ export interface AuthResponse {
   token: string;
   user: User;
 }
+
+export interface EditorialSegment {
+  id: string;
+  problemId: string;
+  segment_text: string;
+  tfidf_vector?: any;
+  source: 'explicit_marker' | 'textiling_split' | 'single_fallback';
+}
+
+export interface UserAttempt {
+  id: string;
+  userId: string;
+  problemId: string;
+  contestId?: string | null;
+  verdict: string;
+  has_submission: boolean;
+}
+
+// ── Similar Problems types ──────────────────────────────────────────────────
+
+export interface SimilarProblemResult {
+  id: string;
+  externalId: string;
+  platform: Platform;
+  name: string;
+  url: string;
+  rating: number | null;
+  tags: string[];
+  solvedCount: number | null;
+}
+
+export interface SimilarBucket {
+  label: string;
+  ratingRange: [number, number];
+  problems: SimilarProblemResult[];
+  limited_data: boolean;
+}
+
+export interface SimilarProblemsResponse {
+  seed_problem: SimilarProblemResult;
+  not_indexed: boolean;
+  buckets: {
+    implementation: SimilarBucket | null;
+    understanding: SimilarBucket | null;
+    variations: SimilarBucket | null;
+  };
+}
+
+export interface ProblemLookupResult {
+  id?: string;
+  name?: string;
+  platform?: Platform;
+  externalId?: string;
+  rating?: number | null;
+  tags?: string[];
+  has_embedding?: boolean;
+  not_indexed?: boolean;
+  message?: string;
+}
+
+export interface UnsolvedProblem {
+  id: string;
+  externalId: string;
+  platform: Platform;
+  name: string;
+  url: string;
+  rating: number | null;
+  tags: string[];
+  solvedCount: number | null;
+  verdict: string;
+  has_embedding: boolean;
+}
+

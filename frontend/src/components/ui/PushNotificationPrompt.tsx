@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const urlBase64ToUint8Array = (base64String: string) => {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -88,37 +87,32 @@ export default function PushNotificationPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 50 }}
-        className="fixed bottom-4 right-4 max-w-sm bg-[#111111] border border-white/[0.08] rounded-xl shadow-2xl shadow-black/50 p-4 z-50 flex items-start gap-4"
-      >
-        <div className="bg-indigo-500/10 p-2 rounded-lg text-indigo-400 mt-1">
-          <Bell className="w-5 h-5" />
+    <div
+      className="fixed bottom-4 right-4 max-w-sm bg-[#161B22] border border-[#30363D] rounded p-4 z-50 flex items-start gap-4"
+    >
+      <div className="bg-[#1C2128] p-2 rounded text-[#8B949E] mt-1">
+        <Bell className="w-5 h-5" />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-semibold text-[#E6EDF3] mb-1 tracking-tight">Never miss a contest</h3>
+        <p className="text-sm text-[#8B949E] mb-3">
+          Get notified 30 minutes before any upcoming contest starts.
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={handleSubscribe}
+            className="bg-[#E6EDF3] text-[#0D1117] text-sm font-medium py-1.5 px-3 rounded transition-colors duration-100 hover:bg-white"
+          >
+            Enable
+          </button>
+          <button
+            onClick={() => setShowPrompt(false)}
+            className="bg-[#161B22] border border-[#30363D] hover:bg-[#1C2128] text-[#8B949E] hover:text-[#E6EDF3] text-sm font-medium py-1.5 px-3 rounded transition-colors duration-100"
+          >
+            Maybe later
+          </button>
         </div>
-        <div className="flex-1">
-          <h3 className="font-semibold text-zinc-100 mb-1 tracking-tight">Never miss a contest</h3>
-          <p className="text-sm text-zinc-400 mb-3">
-            Get notified 30 minutes before any upcoming contest starts.
-          </p>
-          <div className="flex gap-2">
-            <button
-              onClick={handleSubscribe}
-              className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/15 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors"
-            >
-              Enable
-            </button>
-            <button
-              onClick={() => setShowPrompt(false)}
-              className="bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.15] text-zinc-400 hover:text-zinc-100 text-sm font-medium py-1.5 px-3 rounded-lg transition-colors"
-            >
-              Maybe later
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }

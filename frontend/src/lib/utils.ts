@@ -68,7 +68,7 @@ export function buildGoogleCalendarUrl(contest: Contest): string {
 }
 
 export function getPlatformColor(platform: Platform): string {
-  return PLATFORM_MAP[platform]?.color ?? '#6366f1';
+  return PLATFORM_MAP[platform]?.color ?? '#7C8698';
 }
 
 export function getPlatformName(platform: Platform): string {
@@ -91,13 +91,13 @@ export function getPhaseLabel(phase: ContestPhase): string {
 export function getPhaseColor(phase: ContestPhase): string {
   switch (phase) {
     case 'BEFORE':
-      return '#3b82f6';
+      return '#4C8DFF';
     case 'CODING':
       return '#22c55e';
     case 'FINISHED':
-      return '#64748b';
+      return '#7C8698';
     default:
-      return '#64748b';
+      return '#7C8698';
   }
 }
 

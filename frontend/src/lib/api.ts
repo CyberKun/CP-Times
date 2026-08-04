@@ -68,4 +68,22 @@ export const userApi = {
   syncData: () => api.post<any>('/user/sync'),
 };
 
+export const similarApi = {
+  /** Phase 3: get similar problems for a seed problem ID */
+  findSimilar: (problemId: string) =>
+    api.get<any>(`/problems/similar?id=${encodeURIComponent(problemId)}`),
+
+  /** Phase 4c: look up a problem by URL (no mock-create) */
+  lookupUrl: (url: string) =>
+    api.post<any>('/problems/index-url', { url, lookup_only: true }),
+
+  /** Phase 4b: prefix autocomplete over all problems */
+  autocomplete: (query: string) =>
+    api.get<any>(`/problems/autocomplete?q=${encodeURIComponent(query)}`),
+
+  /** Phase 4a: unsolved problems in a contest for auto-surface */
+  getUnsolved: (contestId: string) =>
+    api.get<any>(`/problems/unsolved?contestId=${encodeURIComponent(contestId)}`),
+};
+
 export default api;
